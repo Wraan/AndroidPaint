@@ -20,8 +20,6 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     private var strokeWidth: Int = 0
     private var emboss: Boolean = false
     private var blur: Boolean = false
-    private val mEmboss: MaskFilter
-    private val mBlur: MaskFilter
     private var mBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private val mBitMapPaint = Paint(Paint.DITHER_FLAG)
@@ -36,9 +34,6 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.xfermode = null
         mPaint.alpha = 0xff
-
-        mEmboss = EmbossMaskFilter(floatArrayOf(1f, 1f, 1f), 0.4f, 6f, 3.5f)
-        mBlur = BlurMaskFilter(5f, BlurMaskFilter.Blur.NORMAL)
     }
 
     fun init(metrics: DisplayMetrics) {
@@ -52,25 +47,9 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         strokeWidth = BRUSH_SIZE
     }
 
-    fun normal() {
-        emboss = false
-        blur = false
-    }
-
-    fun emboss() {
-        emboss = true
-        blur = false
-    }
-
-    fun blur() {
-        emboss = false
-        blur = true
-    }
-
     fun clear() {
         bgColor = DEFAULT_BG_COLOR
         paths.clear()
-        normal()
         invalidate()
     }
 
@@ -83,11 +62,6 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
             mPaint.strokeWidth = fp.strokeWidth.toFloat()
             mPaint.maskFilter = null
 
-            if (fp.emboss)
-                mPaint.maskFilter = mEmboss
-            else if (fp.blur)
-                mPaint.maskFilter = mBlur
-
             mCanvas!!.drawPath(fp.path!!, mPaint)
         }
 
@@ -97,7 +71,7 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
 
     private fun touchStart(x: Float, y: Float) {
         mPath = Path()
-        val fp = FingerPath(currentColor, emboss, blur, strokeWidth, mPath)
+        val fp = FingerPath(currentColor, strokeWidth, mPath)
         paths.add(fp)
 
         mPath!!.reset()
@@ -119,6 +93,10 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
 
     private fun touchUp() {
         mPath!!.lineTo(mX, mY)
+    }
+
+    private fun saveImage(){
+
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

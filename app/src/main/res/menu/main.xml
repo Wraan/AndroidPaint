@@ -2,26 +2,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
 >
-
     <item
-            android:id="@+id/normal"
-            app:showAsAction="never"
-            android:title="Normal" />
-
-    <item
-            android:id="@+id/emboss"
-            app:showAsAction="never"
-            android:title="Emboss" />
-
-    <item
-            android:id="@+id/blur"
-            app:showAsAction="never"
-            android:title="Blur" />
+            android:id="@+id/screenShot"
+            android:icon="@drawable/camera"
+            app:showAsAction="always"
+            android:title="ScreenShot" />
 
     <item
             android:id="@+id/clear"
-            app:showAsAction="never"
+            android:icon="@drawable/clear"
+            app:showAsAction="always"
             android:title="Clear" />
+
+    <item
+            android:id="@+id/color"
+            android:icon="@drawable/color"
+            app:showAsAction="always"
+            android:title="Color" />
+
+    <item
+            android:id="@+id/lineWidth"
+            android:icon="@drawable/line_width"
+            app:showAsAction="always"
+            android:title="ScreenShot" />
 
 
 </menu>
