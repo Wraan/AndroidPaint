@@ -2,10 +2,15 @@ package com.wran.androidpaint
 
 import android.content.Context
 import android.graphics.*
+import android.os.Environment
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 import java.util.ArrayList
 
@@ -15,11 +20,9 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     private var mPath: Path? = null
     private val mPaint: Paint
     private val paths = ArrayList<FingerPath>()
-    private var currentColor: Int = 0
+    private var brushColor: Int = 0
     private var bgColor = DEFAULT_BG_COLOR
-    private var strokeWidth: Int = 0
-    private var emboss: Boolean = false
-    private var blur: Boolean = false
+    private var brushWidth: Int = 0
     private var mBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private val mBitMapPaint = Paint(Paint.DITHER_FLAG)
@@ -28,7 +31,7 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         mPaint = Paint()
         mPaint.isAntiAlias = true
         mPaint.isDither = true
-        mPaint.color = DEFAULT_COLOR
+        mPaint.color = DEFAULT_BRUSH_COLOR
         mPaint.style = Paint.Style.STROKE
         mPaint.strokeJoin = Paint.Join.ROUND
         mPaint.strokeCap = Paint.Cap.ROUND
@@ -43,8 +46,8 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap!!)
 
-        currentColor = DEFAULT_COLOR
-        strokeWidth = BRUSH_SIZE
+        brushColor = DEFAULT_BRUSH_COLOR
+        brushWidth = BRUSH_SIZE
     }
 
     fun clear() {
@@ -71,7 +74,7 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
 
     private fun touchStart(x: Float, y: Float) {
         mPath = Path()
-        val fp = FingerPath(currentColor, strokeWidth, mPath)
+        val fp = FingerPath(brushColor, brushWidth, mPath)
         paths.add(fp)
 
         mPath!!.reset()
@@ -95,8 +98,21 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         mPath!!.lineTo(mX, mY)
     }
 
-    private fun saveImage(){
+    fun saveImage(filename: String){
+        var bitmap = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val dir = Environment.getExternalStorageDirectory().path + "/Pictures/" + filename + ".png"
+        try{
+            val os = FileOutputStream(dir)
+            this.draw(canvas)
 
+            bitmap.compress(Bitmap.CompressFormat.PNG,100, os)
+            os.flush()
+            os.close()
+        }
+        catch(e : Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -121,10 +137,22 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         invalidate()
         return true
     }
+    fun getBrushColor(): Int{
+        return brushColor
+    }
+    fun setBrushColor(color: Int){
+        this.brushColor = color
+    }
+    fun getBrushWidth(): Int{
+        return brushWidth
+    }
+    fun setBrushWidth(width: Int){
+        this.brushWidth = width
+    }
 
     companion object {
         var BRUSH_SIZE = 10
-        val DEFAULT_COLOR = Color.BLACK
+        val DEFAULT_BRUSH_COLOR = Color.BLACK
         val DEFAULT_BG_COLOR = Color.WHITE
         private val TOUCH_TOLERANCE = 4.0f
     }
