@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.brush_width_layout.view.*
 class MainActivity : AppCompatActivity() {
 
     val REQUEST_WRITE_EXTERNAL = 1
+    private var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        this.menu = menu
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -66,6 +68,16 @@ class MainActivity : AppCompatActivity() {
             R.id.color -> {
                 showColorPickerDialog()
                 return true
+            }
+            R.id.eraser -> {
+                if(paintView.eraserEnabled) {
+                    menu!!.findItem(R.id.eraser).setIcon(R.drawable.eraser_black)
+                    paintView.disableEraser()
+                }
+                else{
+                    menu!!.findItem(R.id.eraser).setIcon(R.drawable.eraser_white)
+                    paintView.enableEraser()
+                }
             }
         }
 
@@ -154,6 +166,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onOk(dialog: AmbilWarnaDialog, color: Int) {
+                if(paintView.eraserEnabled){
+                    menu!!.findItem(R.id.eraser).setIcon(R.drawable.eraser_black)
+                    paintView.disableEraser()
+                }
                 paintView.setBrushColor(color)
             }
         })

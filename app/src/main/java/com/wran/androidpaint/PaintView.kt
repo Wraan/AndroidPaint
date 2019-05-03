@@ -26,6 +26,8 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     private var mBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private val mBitMapPaint = Paint(Paint.DITHER_FLAG)
+    private var lastBrushColor: Int = 0
+    var eraserEnabled = false
 
     init {
         mPaint = Paint()
@@ -148,6 +150,16 @@ class PaintView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     }
     fun setBrushWidth(width: Int){
         this.brushWidth = width
+    }
+
+    fun enableEraser(){
+        eraserEnabled = true
+        lastBrushColor = brushColor
+        brushColor = DEFAULT_BG_COLOR
+    }
+    fun disableEraser(){
+        eraserEnabled = false
+        brushColor = lastBrushColor
     }
 
     companion object {
